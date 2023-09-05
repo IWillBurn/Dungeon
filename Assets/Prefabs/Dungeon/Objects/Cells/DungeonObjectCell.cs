@@ -22,10 +22,10 @@ public class DungeonObjectCell : DungeonObject
         dungeon.dungeon_map.map[position_x][position_y].cell.component.in_map_coordinate_y = position_y;
     }
 
-    public override void Redraw(int position_x, int position_y, int size_w, int size_h, ref Dungeon dungeon)
+    public override void Redraw(int position_x, int position_y, ref Dungeon dungeon)
     {
-        float start_x = (size_w) / 2f;
-        float start_y = (size_h) / 2f;
+        float start_x = dungeon.size_w / 2f;
+        float start_y = dungeon.size_h / 2f;
         float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + dungeon.transform.position.x;
         float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.5f + dungeon.transform.position.y;
         transform.position = new Vector3(create_x, create_y, 0);

@@ -5,10 +5,17 @@ public class DungeonController : MonoBehaviour
 {
     [SerializeField] GameObject dungeon_exapmle;
     [SerializeField] DungeonObjectsDictionary dictionary;
+    [SerializeField] GameObject camera;
+    Vector2[] moves = new Vector2[4];
     Dungeon dungeon;
 
     public void Start()
     {
+        moves[0] = new Vector2(10, 0);
+        moves[1] = new Vector2(0, 10);
+        moves[2] = new Vector2(-10, 0);
+        moves[3] = new Vector2(0, -10);
+
         bool generated = false;
         while (!generated) generated = GenerateDunge();
         dungeon.GenerateDungeonObjects();
@@ -44,7 +51,8 @@ public class DungeonController : MonoBehaviour
 
     public void Update()
     {
-        if (dungeon != null) dungeon.Move();
+        Vector2[] moves = new Vector2[4];
+        //if (dungeon != null) dungeon.Move();
         if (Input.GetKeyDown(KeyCode.Q))
         {
             dungeon.Rotate();
@@ -70,5 +78,14 @@ public class DungeonController : MonoBehaviour
             dungeon.OpenRoom(1);
             dungeon.OpenRoom(2);
         }
+        if (dungeon.NeedMove())
+        {
+            dungeon.MoveCenter();
+            camera.transform.position = new Vector3(dungeon.center.x, dungeon.center.y, -10);
+        }
+        if (Input.GetKey(KeyCode.D)) dungeon.MoveNewCenter(0.1f, 0f);
+        if (Input.GetKey(KeyCode.S)) dungeon.MoveNewCenter(0f, -0.1f);
+        if (Input.GetKey(KeyCode.A)) dungeon.MoveNewCenter(-0.1f, 0f);
+        if (Input.GetKey(KeyCode.W)) dungeon.MoveNewCenter(0f, 0.1f);
     }
 }

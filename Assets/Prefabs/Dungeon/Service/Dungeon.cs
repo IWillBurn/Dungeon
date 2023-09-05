@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public enum RoomTypes
 {
@@ -586,10 +587,9 @@ public class Dungeon : MonoBehaviour
 {
     int count_of_rooms = 0;
 
-    int frame_start_x;
-    int frame_start_y;
-    int frame_end_x;
-    int frame_end_y;
+    public Vector2 center;
+    public Vector2 new_center;
+    Coordinate[] frame;
 
     public DungeonObjectsDictionary dictionary;
     public Dictionary<RoomGenerateTypes, RoomObjectsPool> pools;
@@ -616,6 +616,10 @@ public class Dungeon : MonoBehaviour
         parameters = new DungeonParameters(-1);
         rooms = new List<RoomInfo>();
         graph = new List<List<CorridorData>>();
+
+        center = new Vector2(size_w / 2f , size_h / 2f);
+        new_center = new Vector2(size_w / 2f, size_h / 2f);
+
         Dungeon dungeon = this;
         return dungeon;
     }
@@ -844,6 +848,7 @@ public class Dungeon : MonoBehaviour
     {
         SetRoomStatusOpened(room_id);
         SetStatusShadowedNeighboringRooms(room_id);
+        RecalculateFrame();
     }
 
     public void SetDungeonStatusClosed()
@@ -935,23 +940,6 @@ public class Dungeon : MonoBehaviour
         rooms[room_id].status = RoomStatuses.CLOSED;
     }
 
-    public void Frame()
-    {
-        for (int i = 0; i < size_w; i++)
-        {
-            for (int j = 0; j < size_h; j++)
-            {
-                if (dungeon_map.map[i][j].id != -1)
-                {
-                    if (i < frame_start_x) frame_start_x = i;
-                    if (j < frame_start_y) frame_start_y = j;
-                    if (i > frame_end_x) frame_end_x = i;
-                    if (j > frame_end_y) frame_end_y = j;
-                }
-            }
-        }
-    }
-
     public void GenerateDungeonObjects()
     {
         Dungeon dungeon = this;
@@ -965,7 +953,66 @@ public class Dungeon : MonoBehaviour
             }
         }
     }
-    
+
+    public void RecalculateFrame()
+    {
+        CalculateOpenFrame();
+        FindCenter();
+    }
+
+    public void CalculateOpenFrame()
+    {
+        Coordinate start = new Coordinate(1000000, 1000000);
+        Coordinate end = new Coordinate(-1, -1);
+
+        for (int i = 0; i < rooms.Count; i++)
+        {
+            if (rooms[i].status == RoomStatuses.OPENED)
+            {
+                start.x = Mathf.Min(start.x, rooms[i].room_start.x);
+                start.y = Mathf.Min(start.y, rooms[i].room_start.y);
+                end.x = Mathf.Max(end.x, rooms[i].room_end.x);
+                end.y = Mathf.Max(end.y, rooms[i].room_end.y);
+            }
+        }
+        frame = new Coordinate[2];
+        frame[0] = start;
+        frame[1] = end;
+    }
+
+    public void FindCenter()
+    {
+        Debug.Log(frame);
+
+        float start_x = size_w / 2f;
+        float start_y = size_h / 2f;
+        int position_x = (frame[0].x + frame[1].x) / 2;
+        int position_y = (frame[0].y + frame[1].y) / 2;
+        new_center.x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + transform.position.x;
+        new_center.y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.5f + transform.position.y;
+    }
+
+    public void MoveNewCenter(float move_x, float move_y) {
+        new_center.x += move_x;
+        new_center.y += move_y;
+    }
+
+    public bool NeedMove()
+    {
+        return Mathf.Sqrt(Mathf.Pow(new_center.x - center.x, 2) + Mathf.Pow(new_center.y - center.y, 2)) > 0.001;
+    }
+
+    public void MoveCenter()
+    {
+        center.x += (new_center.x - center.x) / 32f;
+        center.y += (new_center.y - center.y) / 32f;
+        if (!NeedMove())
+        {
+            center.x = new_center.x;
+            center.y = new_center.y;
+        }
+    }
+
     public void Rotate() {
         parameters.rotate.Next();
         Redraw();
@@ -988,7 +1035,7 @@ public class Dungeon : MonoBehaviour
     public void RedrawCell(int real_position_x, int real_position_y, int virtual_position_x, int virtual_position_y, ref Dungeon dungeon)
     {
         DungeonObjectCell cell = dungeon_map.map[real_position_x][real_position_y].cell.component;
-        if (cell != null) cell.Redraw(virtual_position_x, virtual_position_y, dungeon.parameters.rotate.W(dungeon.size_w, dungeon.size_h), dungeon.parameters.rotate.H(dungeon.size_w, dungeon.size_h), ref dungeon);
+        if (cell != null) cell.Redraw(virtual_position_x, virtual_position_y, ref dungeon);
     }
 
     public void Move()

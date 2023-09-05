@@ -47,7 +47,7 @@ public class DungeonObject : MonoBehaviour
         DungeonObjectItem.GenerateDungeonObject(position_x, position_y, ref dungeon);
     }
 
-    public virtual void Redraw(int position_x, int position_y, int size_w, int size_h, ref Dungeon dungeon) { }
+    public virtual void Redraw(int position_x, int position_y, ref Dungeon dungeon) { }
 
     public virtual void SetStatusOpened() { }
     public virtual void SetStatusShadowed() { }
