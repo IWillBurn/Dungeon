@@ -11,6 +11,7 @@ public class DungeonObjectItem : DungeonObject
     private void Start()
     {
         sprite_controller.SetDrawBorder(1);
+        sprite_controller.SetOrder(Mathf.FloorToInt((1000 - transform.position.y) * 100));
     }
 
     public static void GenerateDungeonObject(int position_x, int position_y, ref Dungeon dungeon)
@@ -18,7 +19,7 @@ public class DungeonObjectItem : DungeonObject
         float start_x = (dungeon.size_w) / 2f;
         float start_y = (dungeon.size_h) / 2f;
         float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + draw_delta[DrawPositions.ITEM].x;
-        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.5f + draw_delta[DrawPositions.ITEM].y;
+        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.65f + draw_delta[DrawPositions.ITEM].y;
         ObjectsKeys object_key = dungeon.dungeon_map.map[position_x][position_y].item.object_key;
         if (object_key == ObjectsKeys.NONE) return;
         GameObject obj = Instantiate(dungeon.dictionary.GetByKey(object_key), dungeon.gameObject.transform, false);
@@ -34,7 +35,7 @@ public class DungeonObjectItem : DungeonObject
         float start_x = dungeon.size_w / 2f;
         float start_y = dungeon.size_h / 2f;
         float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + dungeon.transform.position.x;
-        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.5f + dungeon.transform.position.y;
+        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.65f + dungeon.transform.position.y;
         transform.position = new Vector3(create_x, create_y, 0);
         GetComponent<SpriteRenderer>().sortingOrder = position_x + position_y;
     }

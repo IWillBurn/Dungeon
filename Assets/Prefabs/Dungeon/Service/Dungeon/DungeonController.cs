@@ -1,16 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class DungeonController : MonoBehaviour
 {
     [SerializeField] GameObject dungeon_exapmle;
     [SerializeField] DungeonObjectsDictionary dictionary;
-    [SerializeField] GameObject camera;
+    [SerializeField] EntityController entity_controller;
+    [SerializeField] CameraController camera_controller;
     Vector2[] moves = new Vector2[4];
     Dungeon dungeon;
 
-    public void Start()
+    public ref Dungeon getDugneon()
     {
+        return ref dungeon;
+    }
+    
+    public ref CameraController GetCamera()
+    {
+        return ref camera_controller;
+    }
+
+    public void Start() {
         moves[0] = new Vector2(10, 0);
         moves[1] = new Vector2(0, 10);
         moves[2] = new Vector2(-10, 0);
@@ -21,8 +32,8 @@ public class DungeonController : MonoBehaviour
         dungeon.GenerateDungeonObjects();
         dungeon.SetDungeonStatusClosed();
         dungeon.OpenRoom(0);
-        dungeon.OpenRoom(1);
-        dungeon.OpenRoom(2);
+        camera_controller.AddTarget(dungeon.new_center, 0);
+        entity_controller.SummonEntity(EntitiesKeys.PLAYER, dungeon.size_h / 2, dungeon.size_w / 2);
     }
 
     public bool GenerateDunge()
@@ -64,6 +75,7 @@ public class DungeonController : MonoBehaviour
                 if (dungeon.rooms[i].status == RoomStatuses.SHADOWED)
                 {
                     dungeon.OpenRoom(i);
+                    camera_controller.AddTarget(dungeon.new_center, 0);
                     break;
                 }
             }
@@ -75,17 +87,34 @@ public class DungeonController : MonoBehaviour
             dungeon.GenerateDungeonObjects();
             dungeon.SetDungeonStatusClosed();
             dungeon.OpenRoom(0);
-            dungeon.OpenRoom(1);
-            dungeon.OpenRoom(2);
+            camera_controller.AddTarget(dungeon.new_center, 0);
+            entity_controller.SummonEntity(EntitiesKeys.PLAYER, dungeon.size_h / 2, dungeon.size_w / 2);
         }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            dungeon.FocusNextRoom(); 
+        }
+
+        /*
         if (dungeon.NeedMove())
         {
-            dungeon.MoveCenter();
-            camera.transform.position = new Vector3(dungeon.center.x, dungeon.center.y, -10);
+            int ratio = camera_controller.GetComponent<PixelPerfectCamera>().pixelRatio;
+            dungeon.MoveCenter(ratio);
+            camera_controller.transform.position = new Vector3(dungeon.center.x, dungeon.center.y, -10);
         }
-        if (Input.GetKey(KeyCode.D)) dungeon.MoveNewCenter(0.1f, 0f);
-        if (Input.GetKey(KeyCode.S)) dungeon.MoveNewCenter(0f, -0.1f);
-        if (Input.GetKey(KeyCode.A)) dungeon.MoveNewCenter(-0.1f, 0f);
-        if (Input.GetKey(KeyCode.W)) dungeon.MoveNewCenter(0f, 0.1f);
+        */
+
     }
+
+    /*
+    public void FixedUpdate()
+    {
+        int ratio = camera.GetComponent<PixelPerfectCamera>().pixelRatio;
+        if (Input.GetKey(KeyCode.D)) dungeon.MoveNewCenter(0.25f * ratio, 0f);
+        if (Input.GetKey(KeyCode.S)) dungeon.MoveNewCenter(0f, -0.25f * ratio);
+        if (Input.GetKey(KeyCode.A)) dungeon.MoveNewCenter(-0.25f * ratio, 0f);
+        if (Input.GetKey(KeyCode.W)) dungeon.MoveNewCenter(0f, 0.25f * ratio);
+    }
+    */
 }

@@ -6,6 +6,11 @@ public class DungeonObjectCell : DungeonObject
 {
     [SerializeField] ObjectDefaultSpriteController sprite_controller;
 
+    private void Start()
+    {
+        sprite_controller.SetOrder(Mathf.FloorToInt((1000 - transform.position.y) * 100));
+    }
+
     public static void GenerateDungeonObject(int position_x, int position_y, ref Dungeon dungeon)
     {
         float start_x = (dungeon.size_w) / 2f;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class ObjectDefaultSpriteController : MonoBehaviour
@@ -20,5 +21,15 @@ public class ObjectDefaultSpriteController : MonoBehaviour
     public void SetDrawBorder(float draw_border)
     {
         sprite_renderer.material.SetFloat("_DrawBorder", draw_border);
+    }
+
+    public void SetOrder(int order)
+    {
+        sprite_renderer.sortingOrder = order;
+    }
+
+    public void SetBorderColor(Color color)
+    {
+        sprite_renderer.material.SetColor("_BorderColor", color);
     }
 }

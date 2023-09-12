@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3287355458453460901}
   - component: {fileID: 3467467029390507522}
   - component: {fileID: 1782046712869442758}
+  - component: {fileID: 7647366030557133722}
+  - component: {fileID: 447761582200888306}
   m_Layer: 0
   m_Name: DungeonController
   m_TagString: Untagged
@@ -27,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1386416451401263863}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.6667001, y: 0.112677224, z: 0.036422774}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46,7 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dungeon_exapmle: {fileID: 2071977954595205796, guid: 136db09cefa9971419e8ef8a76b2ca4f, type: 3}
-  dictionary: {fileID: -1769772003413631047, guid: eaf4e41a663f2cc4586863f7c6b1f803, type: 3}
+  dictionary: {fileID: 1782046712869442758}
+  entity_controller: {fileID: 7647366030557133722}
+  camera: {fileID: 0}
 --- !u!114 &1782046712869442758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,3 +66,31 @@ MonoBehaviour:
   dictionary:
   - {fileID: 1310455750015724160, guid: 15a87413a79eb2e4388da020711a1269, type: 3}
   - {fileID: 5650939354576869947, guid: b6d5702133b396d4c98aac2f26e2a13e, type: 3}
+--- !u!114 &7647366030557133722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386416451401263863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbbdc983bb04cb14eb5503a727851b6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dungeon_controller: {fileID: 3467467029390507522}
+  dictionary: {fileID: 447761582200888306}
+--- !u!114 &447761582200888306
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386416451401263863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 924660072ae26e24fbbc2e24c470ace1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dictionary:
+  - {fileID: 2387726406220360018, guid: 6995f119157842444a44eb1bb81d4afe, type: 3}

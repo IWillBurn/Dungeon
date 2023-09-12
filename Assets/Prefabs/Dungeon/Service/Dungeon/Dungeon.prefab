@@ -44,6 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12d4a441c8b2594418a8d10e9d5f4421, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collider_examble: {fileID: 2698169912556154491, guid: 454d7b7dbd0d35544aff41953dc74f04, type: 3}
+  center: {x: 0, y: 0}
+  new_center: {x: 0, y: 0}
   dictionary: {fileID: 0}
   size_w: 0
   size_h: 0

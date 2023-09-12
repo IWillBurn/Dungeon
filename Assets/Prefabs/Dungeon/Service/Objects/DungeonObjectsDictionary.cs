@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public enum ObjectsKeys
@@ -115,7 +113,7 @@ public class DungeonObjectsDictionary : MonoBehaviour
             { ObjectsKeys.ITEM_POT, new ObjectGenerateData(ObjectsKeys.ITEM_POT, PositionTypes.ITEM) },
         };
 
-public GameObject GetByKey(ObjectsKeys key)
+    public GameObject GetByKey(ObjectsKeys key)
     {
         return dictionary[(int) key];
     }

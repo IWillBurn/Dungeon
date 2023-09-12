@@ -312,6 +312,7 @@ public class DungeonCell
     public DungeonObjectContainer<DungeonObjectWall> wall_ru;
     public DungeonObjectContainer<DungeonObjectWall> wall_rd;
     public int id;
+    public bool is_corridor;
 
     public DungeonCell(int _id)
     {
@@ -323,6 +324,11 @@ public class DungeonCell
         wall_lu = new();
         wall_ru = new();
         wall_rd = new();
+        is_corridor = false;
+    }
+
+    public void SetCorridor(bool _is_corridor) {
+        is_corridor = _is_corridor;
     }
 
     public bool AddObject(ref DungeonObjectContainer<DungeonObjectCell> new_object) {
@@ -448,9 +454,11 @@ public class RoomInfo
     public RoomStatuses status;
     public int id, parent, remoteness;
     public Coordinate room_start, room_end;
+    public Coordinate corridore_start, corridore_end;
     public RoomGenerateTypes room_generate_type;
     public RoomTypes room_type;
     public RoomInfo(int _id, int _parent, int _remoteness, Coordinate _room_start, Coordinate _room_end,
+                    Coordinate _corridore_start, Coordinate _corridore_end,
                     RoomGenerateTypes _room_generate_type, RoomTypes _room_type)
     {
         status = RoomStatuses.CLOSED;
@@ -461,6 +469,8 @@ public class RoomInfo
         room_end = _room_end;
         room_generate_type = _room_generate_type;
         room_type = _room_type;
+        corridore_start = _corridore_start;
+        corridore_end = _corridore_end;
     }
 
     public void SetShadowed()
@@ -585,7 +595,12 @@ public class DungeonGenerationHelper
 
 public class Dungeon : MonoBehaviour
 {
+    [SerializeField] GameObject collider_examble;
+
+    PolygonCollider2D dungeon_collider;
+
     int count_of_rooms = 0;
+    int focused_room = 0;
 
     public Vector2 center;
     public Vector2 new_center;
@@ -600,6 +615,12 @@ public class Dungeon : MonoBehaviour
     public List<RoomInfo> rooms;
     public DungeonMapAI ai_map;
     public DungeonParameters parameters;
+
+    public Vector2 FloatCoordinates(int position_x, int position_y) {
+        float start_x = size_w / 2f;
+        float start_y = size_h / 2f;
+        return new Vector2(0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + transform.position.x, -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) + transform.position.y - 0.5f);
+    }
 
     bool InRange(ref List<List<DungeonCell>> list, int x, int y) {
         int size_x = list.Count;
@@ -617,10 +638,27 @@ public class Dungeon : MonoBehaviour
         rooms = new List<RoomInfo>();
         graph = new List<List<CorridorData>>();
 
-        center = new Vector2(size_w / 2f , size_h / 2f);
-        new_center = new Vector2(size_w / 2f, size_h / 2f);
+        frame = new Coordinate[2];
+        frame[0] = new Coordinate(size_w / 2, size_h / 2);
+        frame[1] = new Coordinate(size_w / 2, size_h / 2);
+
+        center = new Vector2(0,0);
+        new_center = new Vector2(0,0);
+        FindCenter(new Coordinate(frame[0].x, frame[0].y), new Coordinate(frame[1].x, frame[1].y));
+        center = new_center;
 
         Dungeon dungeon = this;
+
+        GameObject dungeon_collider_object = Instantiate(collider_examble, gameObject.transform);
+        dungeon_collider = dungeon_collider_object.GetComponent<PolygonCollider2D>();
+
+        Vector2[] main_collider = new Vector2[4];
+        main_collider[0] = new Vector2(10000, -10000);
+        main_collider[1] = new Vector2(10000, 10000);
+        main_collider[2] = new Vector2(-10000, 10000);
+        main_collider[3] = new Vector2(-10000, -10000);
+        dungeon_collider.SetPath(0, main_collider);
+
         return dungeon;
     }
 
@@ -670,8 +708,10 @@ public class Dungeon : MonoBehaviour
         int size_h = UnityEngine.Random.Range(parameters.size_h_min, parameters.size_w_max);
         Coordinate room_start = new(250 - size_w / 2, 250 - size_h / 2);
         Coordinate room_end = new(250 + size_w / 2, 250 + size_h / 2);
-        GenerationAddRectangle(ref room_start, ref room_end, 0);
-        rooms.Add(new RoomInfo(0, -1, 0, room_start, room_end, room, parameters.room_type));
+        Coordinate corridore_start = new(-1, -1);
+        Coordinate corridore_end = new(-1, -1);
+        GenerationAddRectangle(ref room_start, ref room_end, 0, false);
+        rooms.Add(new RoomInfo(0, -1, 0, room_start, room_end, corridore_start, corridore_end, room, parameters.room_type));
         AddBordersOfRoom(ref helper, ref room_start, ref room_end, new int[0], 0, -1);
         GenerateObjectsInRoom(rooms.Count - 1);
     }
@@ -781,10 +821,10 @@ public class Dungeon : MonoBehaviour
         graph[parameters.id].Add(corridor_from);
         graph[range.room_id].Add(corridor_to);
 
-        GenerationAddRectangle(ref corridor_start, ref corridor_end, parameters.id);
-        GenerationAddRectangle(ref room_start, ref room_end, parameters.id);
+        GenerationAddRectangle(ref corridor_start, ref corridor_end, parameters.id, true);
+        GenerationAddRectangle(ref room_start, ref room_end, parameters.id, false);
         int[] exlusion = { range.rotate.state };
-        rooms.Add(new RoomInfo(parameters.id, range.room_id, rooms[range.room_id].remoteness + 1, room_start, room_end, room_generate_type, parameters.room_type));
+        rooms.Add(new RoomInfo(parameters.id, range.room_id, rooms[range.room_id].remoteness + 1, room_start, room_end, corridor_current_start, corridor_current_end, room_generate_type, parameters.room_type));
         if (!parameters.end) AddBordersOfRoom(ref helper, ref room_start, ref room_end, exlusion, parameters.id, range.room_id);
         GenerateObjectsInRoom(rooms.Count - 1);
         return true;
@@ -802,13 +842,14 @@ public class Dungeon : MonoBehaviour
         return true;
     }
 
-    void GenerationAddRectangle(ref Coordinate start, ref Coordinate end, int id)
+    void GenerationAddRectangle(ref Coordinate start, ref Coordinate end, int id, bool is_corridor)
     {
         for (int i = Mathf.Min(start.x, end.x); i < Mathf.Max(start.x, end.x); i++)
         {
             for (int j = Mathf.Min(start.y, end.y); j < Mathf.Max(start.y, end.y); j++)
             {
                 dungeon_map.map[i][j].id = id;
+                dungeon_map.map[i][j].is_corridor = is_corridor;
             }
         }
     }
@@ -849,6 +890,8 @@ public class Dungeon : MonoBehaviour
         SetRoomStatusOpened(room_id);
         SetStatusShadowedNeighboringRooms(room_id);
         RecalculateFrame();
+        AddRoomToCollider(room_id);
+        FocusRoom(room_id);
     }
 
     public void SetDungeonStatusClosed()
@@ -943,21 +986,114 @@ public class Dungeon : MonoBehaviour
     public void GenerateDungeonObjects()
     {
         Dungeon dungeon = this;
-        for (int i = 0; i < size_w; i++)
+        for (int z = 0; z < rooms.Count; z++)
         {
-            for (int j = 0; j < size_h; j++)
+            RoomInfo room = rooms[z];
+            Coordinate corridore_start = room.corridore_start;
+            Coordinate corridore_end = room.corridore_end;
+            if (corridore_start.x != -1)
             {
-                int position_x = parameters.rotate.X(i, j, size_w, size_h);
-                int position_y = parameters.rotate.Y(i, j, size_w, size_h);
-                DungeonObject.GenerateDungeonObjects(position_x, position_y, ref dungeon);
+                for (int i = corridore_start.x; i < corridore_end.x; i++)
+                {
+                    for (int j = corridore_start.y; j < corridore_end.y; j++)
+                    {
+                        int position_x = parameters.rotate.X(i, j, size_w, size_h);
+                        int position_y = parameters.rotate.Y(i, j, size_w, size_h);
+                        DungeonObject.GenerateDungeonObjects(position_x, position_y, ref dungeon);
+                    }
+                }
+            }
+            Coordinate room_start = room.room_start;
+            Coordinate room_end = room.room_end;
+            for (int i = room_start.x; i < room_end.x; i++)
+            {
+                for (int j = room_start.y; j < room_end.y; j++)
+                {
+                    int position_x = parameters.rotate.X(i, j, size_w, size_h);
+                    int position_y = parameters.rotate.Y(i, j, size_w, size_h);
+                    DungeonObject.GenerateDungeonObjects(position_x, position_y, ref dungeon);
+                }
             }
         }
+
+
+    }
+
+    public void CalcualateCollider() {
+        dungeon_collider.pathCount = 0;
+
+        dungeon_collider.pathCount++;
+        Vector2[] main_collider = new Vector2[4];
+        main_collider[0] = new Vector2(-10000, -10000);
+        main_collider[1] = new Vector2(10000, -10000);
+        main_collider[2] = new Vector2(10000, 10000);
+        main_collider[3] = new Vector2(-10000, 10000);
+        dungeon_collider.SetPath(0, main_collider);
+
+        for (int z = 0; z < rooms.Count; z++)
+        {
+            AddRoomToCollider(z);
+        }
+    }
+
+    public void AddRoomToCollider(int room_id)
+    {
+        RoomInfo room = rooms[room_id];
+        Coordinate corridore_start = room.corridore_start;
+        Coordinate corridore_end = room.corridore_end;
+        if (corridore_start.x != -1)
+        {
+            dungeon_collider.pathCount++;
+            dungeon_collider.SetPath(dungeon_collider.pathCount - 1, CalculateRectangleCollider(corridore_start, corridore_end));
+        }
+        Coordinate room_start = room.room_start;
+        Coordinate room_end = room.room_end;
+        dungeon_collider.pathCount++;
+        dungeon_collider.SetPath(dungeon_collider.pathCount - 1, CalculateRectangleCollider(room_start, room_end));
+    }
+
+    public Vector2[] CalculateRectangleCollider(Coordinate start, Coordinate end) {
+        float start_x = size_w / 2f;
+        float start_y = size_h / 2f;
+
+        Vector2[] result = new Vector2[4];
+
+        Vector2 rectangle_u = FloatCoordinates(start.x, start.y);
+        rectangle_u.y += 0.5f;
+        Vector2 rectangle_r = FloatCoordinates(end.x, start.y);
+        rectangle_r.y += 0.5f;
+        Vector2 rectangle_d = FloatCoordinates(end.x, end.y);
+        rectangle_d.y += 0.5f;
+        Vector2 rectangle_l = FloatCoordinates(start.x, end.y);
+        rectangle_l.y += 0.5f;
+
+        result[0] = rectangle_u;
+        result[1] = rectangle_r;
+        result[2] = rectangle_d;
+        result[3] = rectangle_l;
+        return result;
+    }
+    
+    public void FocusRoom(int room_id)
+    {
+        FindCenter(rooms[room_id].room_start, rooms[room_id].room_end);
+        focused_room = room_id;
+    }
+
+    public void FocusNextRoom()
+    {
+        focused_room = (focused_room + 1) % rooms.Count;
+        while (rooms[focused_room].status != RoomStatuses.OPENED)
+        {
+            focused_room = (focused_room + 1) % rooms.Count;
+        }
+        FindCenter(rooms[focused_room].room_start, rooms[focused_room].room_end);
     }
 
     public void RecalculateFrame()
     {
         CalculateOpenFrame();
-        FindCenter();
+        FindCenter(new Coordinate(frame[0].x, frame[0].y), new Coordinate(frame[1].x, frame[1].y));
     }
 
     public void CalculateOpenFrame()
@@ -980,16 +1116,15 @@ public class Dungeon : MonoBehaviour
         frame[1] = end;
     }
 
-    public void FindCenter()
+    public void FindCenter(Coordinate start, Coordinate end)
     {
-        Debug.Log(frame);
-
         float start_x = size_w / 2f;
         float start_y = size_h / 2f;
-        int position_x = (frame[0].x + frame[1].x) / 2;
-        int position_y = (frame[0].y + frame[1].y) / 2;
-        new_center.x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + transform.position.x;
-        new_center.y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.5f + transform.position.y;
+        int position_x = (start.x + end.x) / 2;
+        int position_y = (start.y + end.y) / 2;
+        Vector2 center = FloatCoordinates(position_x, position_y);
+        new_center.x = center.x;
+        new_center.y = center.y;
     }
 
     public void MoveNewCenter(float move_x, float move_y) {
@@ -999,13 +1134,13 @@ public class Dungeon : MonoBehaviour
 
     public bool NeedMove()
     {
-        return Mathf.Sqrt(Mathf.Pow(new_center.x - center.x, 2) + Mathf.Pow(new_center.y - center.y, 2)) > 0.001;
+        return Mathf.Sqrt(Mathf.Pow(new_center.x - center.x, 2) + Mathf.Pow(new_center.y - center.y, 2)) > 0.01;
     }
 
-    public void MoveCenter()
+    public void MoveCenter(int ration)
     {
-        center.x += (new_center.x - center.x) / 32f;
-        center.y += (new_center.y - center.y) / 32f;
+        center.x += (new_center.x - center.x) / (32 / ration);
+        center.y += (new_center.y - center.y) / (32 / ration);
         if (!NeedMove())
         {
             center.x = new_center.x;
