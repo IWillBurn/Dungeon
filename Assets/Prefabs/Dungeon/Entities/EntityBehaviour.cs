@@ -12,7 +12,7 @@ public enum EntityParametersKeys
 public class EntityBehaviour : MonoBehaviour
 {
     [SerializeField] Sprite[] sprites;
-    [SerializeField] protected EntitiesDefaultSpriteController sprite_controller;
+    public EntitiesDefaultSpriteController sprite_controller;
 
     public EntityController controller;
     public DungeonObjectCell cell;

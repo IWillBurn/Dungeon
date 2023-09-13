@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ObjectDefaultSpriteController : MonoBehaviour
 {
-    [SerializeField] SpriteRenderer sprite_renderer;
+    public SpriteRenderer sprite_renderer;
     public void Start()
     {
         sprite_renderer = gameObject.GetComponent<SpriteRenderer>();

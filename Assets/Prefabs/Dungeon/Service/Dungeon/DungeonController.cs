@@ -11,7 +11,7 @@ public class DungeonController : MonoBehaviour
     Vector2[] moves = new Vector2[4];
     Dungeon dungeon;
 
-    public ref Dungeon getDugneon()
+    public ref Dungeon GetDugneon()
     {
         return ref dungeon;
     }

@@ -32,7 +32,6 @@ public class PlayerBehaviour : EntityBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        //Destroy(collision.gameObject);
         if (collision.gameObject.GetComponent<DungeonObjectCell>() != null)
         {
             cell = collision.gameObject.GetComponent<DungeonObjectCell>();

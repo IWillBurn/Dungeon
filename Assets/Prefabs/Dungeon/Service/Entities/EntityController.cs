@@ -30,10 +30,15 @@ public class EntityController : MonoBehaviour
         player_room_number = -1;
     }
 
+    public ref DungeonController GetDungeonController()
+    {
+        return ref dungeon_controller;
+    }
+
     public void SummonEntity(EntitiesKeys key, int position_x, int position_y)
     {
-        GameObject entity = Instantiate(dictionary.GetByKey(key), dungeon_controller.getDugneon().gameObject.transform);
-        entity.transform.position = dungeon_controller.getDugneon().GetComponent<Dungeon>().FloatCoordinates(position_x, position_y);
+        GameObject entity = Instantiate(dictionary.GetByKey(key), dungeon_controller.GetDugneon().gameObject.transform);
+        entity.transform.position = dungeon_controller.GetDugneon().GetComponent<Dungeon>().FloatCoordinates(position_x, position_y);
         EntityController controller = this;
         entity.GetComponent<EntityBehaviour>().controller = controller;
         entities.Add(key_number, new EntityData(key, ref entity));
@@ -43,7 +48,7 @@ public class EntityController : MonoBehaviour
 
     public void MoveToCell(ref DungeonObjectCell cell)
     {
-        Dungeon dungeon = dungeon_controller.getDugneon();
+        Dungeon dungeon = dungeon_controller.GetDugneon();
         if (dungeon.dungeon_map.map[cell.in_map_coordinate_x][cell.in_map_coordinate_y].is_corridor == false)
         {
             int new_player_room_number = dungeon.dungeon_map.map[cell.in_map_coordinate_x][cell.in_map_coordinate_y].id;

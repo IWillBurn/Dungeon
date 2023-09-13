@@ -300,6 +300,11 @@ public class DungeonObjectContainer<T>
     {
         object_key = _key;
     }
+    public DungeonObjectContainer(ObjectsKeys _key, T _component)
+    {
+        object_key = _key;
+        component = _component;
+    }
 }
 
 public class DungeonCell

@@ -24,7 +24,6 @@ public class DungeonObjectItem : DungeonObject
         if (object_key == ObjectsKeys.NONE) return;
         GameObject obj = Instantiate(dungeon.dictionary.GetByKey(object_key), dungeon.gameObject.transform, false);
         obj.transform.position = new Vector3(create_x, create_y, 0);
-        obj.GetComponent<SpriteRenderer>().sortingOrder = position_x + position_y;
         dungeon.dungeon_map.map[position_x][position_y].item.component = obj.GetComponent<DungeonObjectItem>();
         dungeon.dungeon_map.map[position_x][position_y].item.component.in_map_coordinate_x = position_x;
         dungeon.dungeon_map.map[position_x][position_y].item.component.in_map_coordinate_y = position_y;
@@ -35,9 +34,9 @@ public class DungeonObjectItem : DungeonObject
         float start_x = dungeon.size_w / 2f;
         float start_y = dungeon.size_h / 2f;
         float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + dungeon.transform.position.x;
-        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.65f + dungeon.transform.position.y;
+        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.15f + dungeon.transform.position.y;
         transform.position = new Vector3(create_x, create_y, 0);
-        GetComponent<SpriteRenderer>().sortingOrder = position_x + position_y;
+        sprite_controller.SetOrder(Mathf.FloorToInt((1000 - transform.position.y) * 100));
     }
 
     public override void SetStatusOpened()

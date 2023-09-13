@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 3708693967311716840}
   - component: {fileID: -503213747083027312}
   - component: {fileID: 8192603330302983591}
-  - component: {fileID: 568357456148881537}
+  - component: {fileID: -7120248287737420027}
   - component: {fileID: 8808131917267437968}
   - component: {fileID: 3471200231909963189}
   - component: {fileID: -4161612759358412550}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ItemPot
   m_TagString: Object
   m_Icon: {fileID: 0}
@@ -109,7 +109,7 @@ MonoBehaviour:
   size_w: 1
   size_h: 1
   sprite_controller: {fileID: 8808131917267437968}
---- !u!114 &568357456148881537
+--- !u!114 &-7120248287737420027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5650939354576869947}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19d5be7424054ee4e96434ad9e863626, type: 3}
+  m_Script: {fileID: 11500000, guid: d391704cc7ab6bc4288c13bad38fec23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sprite_controller: {fileID: 8808131917267437968}

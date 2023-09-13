@@ -11,5 +11,6 @@ public class Pickable : Selectable
         picked = _picked;
         SetSelected(false);
         transform.parent = _parent;
+        transform.position = new Vector2(0, 0.5f);
     }
 }
