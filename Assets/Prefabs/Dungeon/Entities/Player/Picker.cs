@@ -56,6 +56,7 @@ public class Picker : MonoBehaviour
             Coordinate storage_position = new Coordinate(selecter.selected.GetComponent<DungeonObjectCell>().in_map_coordinate_x, selecter.selected.GetComponent<DungeonObjectCell>().in_map_coordinate_y);
             if (item_data != null && selecter.entity.controller.GetDungeonController().GetDugneon().dungeon_map.map[storage_position.x][storage_position.y].item.object_key == ObjectsKeys.NONE) {
                 selecter.entity.controller.GetDungeonController().GetDugneon().dungeon_map.map[storage_position.x][storage_position.y].item = item_data;
+                selecter.selected.SetSelected(false);
                 picked.SetPicked(false, selecter.entity.controller.GetDungeonController().GetDugneon().gameObject.transform);
                 item_data.component.Redraw(storage_position.x, storage_position.y, ref selecter.entity.controller.GetDungeonController().GetDugneon());
                 item_data.component.in_map_coordinate_x = storage_position.x;

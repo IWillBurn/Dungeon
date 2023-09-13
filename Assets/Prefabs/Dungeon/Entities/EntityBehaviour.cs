@@ -7,6 +7,7 @@ public enum EntityParametersKeys
     SPEED = 0,
     VIEW_DIRECTION = 1,
     HAND_SIZE = 2,
+    MOVE_DIRECTION = 3,
 }
 
 public class EntityBehaviour : MonoBehaviour
