@@ -32,4 +32,9 @@ public class ObjectDefaultSpriteController : MonoBehaviour
     {
         sprite_renderer.material.SetColor("_BorderColor", color);
     }
+
+    public void SetMainColor(Color color)
+    {
+        sprite_renderer.material.SetColor("_MainColor", color);
+    }
 }

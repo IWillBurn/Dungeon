@@ -25,9 +25,8 @@ public class Picker : MonoBehaviour
         {
             picked = selecter.selected.GetComponent<Pickable>();
             picked.SetPicked(true, transform);
-            selecter.finding = FindingObjects.CELL;
-            selecter.selected = null;
             UpdateStorage();
+            selecter.StartFindCell(item_data.object_key);
         }
     }
 
@@ -63,8 +62,7 @@ public class Picker : MonoBehaviour
                 item_data.component.in_map_coordinate_y = storage_position.y;
                 picked = null;
                 item_data = null;
-                selecter.finding = FindingObjects.OBJECT;
-                selecter.selected = null;
+                selecter.StartFindObject();
             }
         }
     }

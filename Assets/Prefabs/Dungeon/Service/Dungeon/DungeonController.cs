@@ -32,6 +32,8 @@ public class DungeonController : MonoBehaviour
         dungeon.GenerateDungeonObjects();
         dungeon.SetDungeonStatusClosed();
         dungeon.OpenRoom(0);
+        dungeon.OpenRoom(1);
+        dungeon.OpenRoom(2);
         camera_controller.AddTarget(dungeon.new_center, 0);
         entity_controller.SummonEntity(EntitiesKeys.PLAYER, dungeon.size_h / 2, dungeon.size_w / 2);
     }
@@ -87,6 +89,8 @@ public class DungeonController : MonoBehaviour
             dungeon.GenerateDungeonObjects();
             dungeon.SetDungeonStatusClosed();
             dungeon.OpenRoom(0);
+            dungeon.OpenRoom(1);
+            dungeon.OpenRoom(2);
             camera_controller.AddTarget(dungeon.new_center, 0);
             entity_controller.SummonEntity(EntitiesKeys.PLAYER, dungeon.size_h / 2, dungeon.size_w / 2);
         }

@@ -17,6 +17,11 @@ public class Selecter : MonoBehaviour
     public Selectable selected;
     public FindingObjects finding;
 
+    public GameObject shadow;
+    public SpriteRenderer shadow_sprite_renderer;
+    public ObjectDefaultSpriteController shadow_sprite_controller;
+    public DungeonObject shadow_dungeon_object;
+
     void Start()
     {
         selected = null;
@@ -27,6 +32,33 @@ public class Selecter : MonoBehaviour
     Vector2 Normalize(Vector2 a) {
         float size = Mathf.Sqrt(Mathf.Pow(a.x, 2) + Mathf.Pow(a.y, 2));
         return new Vector2(a.x / size, a.y / size);
+    }
+
+    public void StartFindObject()
+    {
+        finding = FindingObjects.OBJECT;
+        selected = null;
+        if (shadow != null) Destroy(shadow);
+    }
+
+    public void StartFindCell(ObjectsKeys key)
+    {
+        finding = FindingObjects.CELL;
+        selected = null;
+        shadow = Instantiate(entity.controller.GetDungeonController().GetDugneon().dictionary.GetByKey(key), new Vector3(1000, 1000, 0), new Quaternion());
+        Behaviour[] components = shadow.GetComponents<Behaviour>();
+        for (int i = 0; i < components.Length; i++)
+        {
+            components[i].enabled = false;
+        }
+        shadow_dungeon_object = shadow.GetComponent<DungeonObject>();
+        shadow_dungeon_object.enabled = true;
+        shadow_sprite_renderer = shadow.GetComponent<SpriteRenderer>();
+        shadow_sprite_renderer.enabled = true;
+        shadow_sprite_controller = shadow.GetComponent<ObjectDefaultSpriteController>();
+        shadow_sprite_controller.enabled = true;
+        shadow_sprite_controller.SetAlpha(0.55f);
+        shadow_sprite_controller.SetMainColor(new Color(1f, 0f, 0.65f));
     }
 
     void FindObjects()
@@ -94,6 +126,7 @@ public class Selecter : MonoBehaviour
                 if (selected != null) selected.SetSelected(false);
                 selected = result;
                 selected.SetSelected(true);
+                shadow_dungeon_object.Redraw(cell.in_map_coordinate_x, cell.in_map_coordinate_y, ref entity.controller.GetDungeonController().GetDugneon());
             }
         }
     }

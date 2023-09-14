@@ -29,6 +29,7 @@ public class PlayerBehaviour : EntityBehaviour
             float angle = Mathf.Atan2(delta_y, delta_x);
             parameters[(int) EntityParametersKeys.MOVE_DIRECTION] = angle;
             transform.position = new Vector2(transform.position.x + parameters[(int)EntityParametersKeys.SPEED] * Mathf.Cos(angle), transform.position.y + parameters[(int)EntityParametersKeys.SPEED] * Mathf.Sin(angle));
+            parameters[(int)EntityParametersKeys.VIEW_DIRECTION] = parameters[(int)EntityParametersKeys.MOVE_DIRECTION];
         }
 
         if (Input.GetKey(KeyCode.RightArrow)) view_delta_x += 1;
@@ -36,7 +37,6 @@ public class PlayerBehaviour : EntityBehaviour
         if (Input.GetKey(KeyCode.LeftArrow)) view_delta_x -= 1;
         if (Input.GetKey(KeyCode.UpArrow)) view_delta_y += 0.5f;
         if (view_delta_x != 0 || view_delta_y != 0) parameters[(int)EntityParametersKeys.VIEW_DIRECTION] = Mathf.Atan2(view_delta_y, view_delta_x);
-        else parameters[(int)EntityParametersKeys.VIEW_DIRECTION] = parameters[(int)EntityParametersKeys.MOVE_DIRECTION];
     }
 
     private void OnTriggerStay2D(Collider2D collision)
