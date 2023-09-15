@@ -18,8 +18,8 @@ public class DungeonObjectItem : DungeonObject
     {
         float start_x = (dungeon.size_w) / 2f;
         float start_y = (dungeon.size_h) / 2f;
-        float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + draw_delta[DrawPositions.ITEM].x;
-        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.65f + draw_delta[DrawPositions.ITEM].y;
+        float create_x = 0.5f * (position_x - start_x) - 0.5f * (position_y - start_y) + draw_delta[Positions.ITEM].x;
+        float create_y = -0.25f * (position_x - start_x) - 0.25f * (position_y - start_y) - 0.65f + draw_delta[Positions.ITEM].y;
         ObjectsKeys object_key = dungeon.dungeon_map.map[position_x][position_y].item.object_key;
         if (object_key == ObjectsKeys.NONE) return;
         GameObject obj = Instantiate(dungeon.dictionary.GetByKey(object_key), dungeon.gameObject.transform, false);

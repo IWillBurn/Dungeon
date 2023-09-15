@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum DrawPositions
+public enum Positions
 {
     CELL,
     ITEM,
@@ -24,21 +24,21 @@ public enum PositionTypes
 
 public class DungeonObject : MonoBehaviour
 {
-    public DrawPositions draw_positions;
+    public Positions draw_positions;
     public Vector2 main_position;
     public PositionTypes position;
     public int in_map_coordinate_x;
     public int in_map_coordinate_y;
-    public static Dictionary<DrawPositions, Vector2> draw_delta =
-        new Dictionary<DrawPositions, Vector2>
+    public static Dictionary<Positions, Vector2> draw_delta =
+        new Dictionary<Positions, Vector2>
         {
-            { DrawPositions.CELL, new Vector2(0,0)},
-            { DrawPositions.ITEM, new Vector2(0,0.438f)},
-            { DrawPositions.FLOOR, new Vector2(0,0)},
-            { DrawPositions.WALL_LD, new Vector2(0,0)},
-            { DrawPositions.WALL_LU, new Vector2(0,0)},
-            { DrawPositions.WALL_RD, new Vector2(0,0)},
-            { DrawPositions.WALL_RU, new Vector2(0,0)},
+            { Positions.CELL, new Vector2(0,0)},
+            { Positions.ITEM, new Vector2(0,0.438f)},
+            { Positions.FLOOR, new Vector2(0,0)},
+            { Positions.WALL_LD, new Vector2(0,0)},
+            { Positions.WALL_LU, new Vector2(0,0)},
+            { Positions.WALL_RD, new Vector2(0,0)},
+            { Positions.WALL_RU, new Vector2(0,0)},
         };
 
     static public void GenerateDungeonObjects(int position_x, int position_y, ref Dungeon dungeon)
@@ -53,7 +53,7 @@ public class DungeonObject : MonoBehaviour
     public virtual void SetStatusShadowed() { }
     public virtual void SetStatusClosed() { }
 
-    public void RedrawAs(DrawPositions position)
+    public void RedrawAs(Positions position)
     {
         transform.position = new Vector3(main_position.x + draw_delta[position].x, main_position.y + draw_delta[position].y, 0);
     }

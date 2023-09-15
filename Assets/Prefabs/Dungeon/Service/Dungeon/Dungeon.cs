@@ -318,6 +318,7 @@ public class DungeonCell
     public DungeonObjectContainer<DungeonObjectWall> wall_rd;
     public int id;
     public bool is_corridor;
+    public RoomStatuses status;
 
     public DungeonCell(int _id)
     {
@@ -330,6 +331,7 @@ public class DungeonCell
         wall_ru = new();
         wall_rd = new();
         is_corridor = false;
+        status = RoomStatuses.CLOSED;
     }
 
     public void SetCorridor(bool _is_corridor) {
@@ -416,6 +418,7 @@ public class DungeonCell
 
     public void SetStatusOpened()
     {
+        status = RoomStatuses.OPENED;
         if (cell.component != null) cell.component.SetStatusOpened();
         if (item.component != null) item.component.SetStatusOpened();
         /*
@@ -429,6 +432,7 @@ public class DungeonCell
 
     public void SetStatusShadowed()
     {
+        status = RoomStatuses.SHADOWED;
         if (cell.component != null) cell.component.SetStatusShadowed();
         if (item.component != null) item.component.SetStatusShadowed();
         /*
@@ -442,6 +446,7 @@ public class DungeonCell
 
     public void SetStatusClosed()
     {
+        status = RoomStatuses.CLOSED;
         if (cell.component != null) cell.component.SetStatusClosed();
         if (item.component != null) item.component.SetStatusClosed();
         /*

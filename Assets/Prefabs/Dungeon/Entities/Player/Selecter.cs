@@ -17,6 +17,7 @@ public class Selecter : MonoBehaviour
     public Selectable selected;
     public FindingObjects finding;
 
+    public Positions shadow_type;
     public GameObject shadow;
     public SpriteRenderer shadow_sprite_renderer;
     public ObjectDefaultSpriteController shadow_sprite_controller;
@@ -51,6 +52,7 @@ public class Selecter : MonoBehaviour
         {
             components[i].enabled = false;
         }
+        if (shadow.GetComponent<DungeonObjectItem>() != null) shadow_type = Positions.ITEM;
         shadow_dungeon_object = shadow.GetComponent<DungeonObject>();
         shadow_dungeon_object.enabled = true;
         shadow_sprite_renderer = shadow.GetComponent<SpriteRenderer>();
@@ -58,7 +60,7 @@ public class Selecter : MonoBehaviour
         shadow_sprite_controller = shadow.GetComponent<ObjectDefaultSpriteController>();
         shadow_sprite_controller.enabled = true;
         shadow_sprite_controller.SetAlpha(0.55f);
-        shadow_sprite_controller.SetMainColor(new Color(1f, 0f, 0.65f));
+        shadow_sprite_controller.SetMainColor(new Color(0f, 1f, 0.15f));
     }
 
     void FindObjects()
@@ -113,8 +115,8 @@ public class Selecter : MonoBehaviour
     void FindCells()
     {
         float direction = entity.parameters[(int)EntityParametersKeys.VIEW_DIRECTION];
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)), 0.5f);
-        Debug.DrawRay(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)) * 0.5f, Color.yellow);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)), 1f);
+        Debug.DrawRay(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)) * 1f, Color.red);
         bool first = true; 
         for (int i = 0; i < hits.Length; i++)
         {
@@ -125,8 +127,15 @@ public class Selecter : MonoBehaviour
                 if (first) {first = false; continue; }
                 if (selected != null) selected.SetSelected(false);
                 selected = result;
-                selected.SetSelected(true);
-                shadow_dungeon_object.Redraw(cell.in_map_coordinate_x, cell.in_map_coordinate_y, ref entity.controller.GetDungeonController().GetDugneon());
+                if (shadow_type == Positions.ITEM && entity.controller.GetDungeonController().GetDugneon().dungeon_map.map[cell.in_map_coordinate_x][cell.in_map_coordinate_y].item.object_key == ObjectsKeys.NONE
+                    && entity.controller.GetDungeonController().GetDugneon().dungeon_map.map[cell.in_map_coordinate_x][cell.in_map_coordinate_y].status == RoomStatuses.OPENED)
+                {
+                    selected.SetSelected(true);
+                    shadow_dungeon_object.Redraw(cell.in_map_coordinate_x, cell.in_map_coordinate_y, ref entity.controller.GetDungeonController().GetDugneon());
+                    break;
+                }
+                selected = null;
+
             }
         }
     }
