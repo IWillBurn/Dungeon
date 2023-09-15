@@ -115,8 +115,8 @@ public class Selecter : MonoBehaviour
     void FindCells()
     {
         float direction = entity.parameters[(int)EntityParametersKeys.VIEW_DIRECTION];
-        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)), 1f);
-        Debug.DrawRay(transform.position, new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)) * 1f, Color.red);
+        RaycastHit2D[] hits = Physics2D.RaycastAll(new Vector2(transform.position.x, transform.position.y - 0.1f), new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)), 0.8f);
+        Debug.DrawRay(new Vector2(transform.position.x, transform.position.y - 0.1f), new Vector2(Mathf.Cos(direction), Mathf.Sin(direction)) * 0.8f, Color.red);
         bool first = true; 
         for (int i = 0; i < hits.Length; i++)
         {
